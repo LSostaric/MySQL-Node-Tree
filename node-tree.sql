@@ -1,3 +1,35 @@
+/*
+ *	Copyright (C) 2010 Luka Sostaric. MySQL Node Tree is
+ *	distributed under the terms of the GNU General Public
+ *	License.
+ *
+ *	This program is free software: You can redistribute and/or modify
+ *	it under the terms of the GNU General Public License, as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	Program Information
+ *	-------------------
+ *	Program Name: MySQL Node Tree
+ *	Module Name: Node Tree
+ *	External Components Used: None
+ *	Required Modules: None
+ *	License: GNU GPL
+ *
+ *	Author Information
+ *	------------------
+ *	Full Name: Luka Sostaric
+ *	E-mail: <luka@lukasostaric.com>
+ *	Website: <http://lukasostaric.com>
+ */
 drop procedure if exists insert_node;
 delimiter //
 create_procedure insert_node(in _name varchar(255), in _description varchar(255), 
