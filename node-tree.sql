@@ -3,7 +3,7 @@
  *	distributed under the terms of the GNU General Public
  *	License.
  *
- *	This program is free software: You can redistribute and/or modify
+ *	This program is free software: You can redistribute AND/or modIFy
  *	it under the terms of the GNU General Public License, as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
@@ -27,53 +27,53 @@
  *	Author Information
  *	------------------
  *	Full Name: Luka Sostaric
- *	E-mail: <luka@lukasostaric.com>
- *	Website: <http://lukasostaric.com>
+ *	E-mail: luka@lukasostaric.com
+ *	Website: www.lukasostaric.com
  */
-drop procedure if exists insert_node;
-delimiter //
-create_procedure insert_node(in _name varchar(255), in _description varchar(255), 
-	in _slug varchar(255), in _parent_id int)
-begin
-	select count(*) into @row_count from nodetree;
-	if @row_count = 0 then
-		insert into nodetree(name, description, slug, lft, rgt) 
-			values(_name, _description, _slug, 1, 2);
-	else
-		if isnull(_parent_id) then
-			select @lft := max(rgt) + 1, @rgt := max(rgt) + 2 from nodetree;
-			insert into nodetree(name, description, slug, lft, rgt) 
-				values(_name, _description, _slug, @lft, @rgt);
-		else
-			select @subject_lft := lft, @subject_rgt := rgt 
-				from nodetree where id = _parent_id;
-			select count(*) into @children_count from nodetree 
-				where lft > @subject_lft and rgt < @subject_rgt;
-			if @children_count = 0 then
-				update nodetree set rgt = rgt + 2 where rgt >= @subject_rgt;
-				update nodetree set lft = lft + 2 where lft > @subject_lft;
-				insert into nodetree(name, description, slug, lft, rgt) 
-					values(_name, _description, _slug, @subject_lft + 1, @subject_lft + 2);
-			else
-				select @max_lft := max(lft), @max_rgt := max(rgt) from nodetree 
-					where lft > @subject_lft and rgt < @subject_rgt;
-				update nodetree set lft = lft + 2 where lft > @max_lft;
-				update nodetree set rgt = rgt + 2 where rgt > @max_rgt;
-				insert into nodetree(name, description, slug, lft, rgt) 
-					values(_name, _description, _slug, @max_lft + 2, @max_rgt + 2);
-			end if;
-		end if;
-	end if;
-end//
-delimiter ;
-drop procedure if exists delete_node;
-delimiter //
-create_procedure delete_node(in _id int)
-begin
-	select @subject_lft := lft, @subject_rgt := rgt from nodetree where id = _id;
-	delete from nodetree where lft >= @subject_lft and rgt <= @subject_rgt;
-	set @x := @subject_rgt - @subject_lft + 1;
-	update nodetree set lft = lft- @x where lft > @subject_lft;
-	update nodetree set rgt = rgt- @x where rgt > @subject_rgt;
-end//
-delimiter ;
+DROP PROCEDURE IF EXISTS insert_node;
+DELIMITER //
+CREATE PROCEDURE insert_node(IN _name VARCHAR(255), IN _description VARCHAR(255), 
+	IN _slug VARCHAR(255), IN _parent_id INT)
+BEGIN
+	SELECT COUNT(*) INTO @row_count FROM nodetree;
+	IF @row_count = 0 THEN
+		INSERT INTO nodetree(name, description, slug, lft, rgt) 
+			VALUES(_name, _description, _slug, 1, 2);
+	ELSE
+		IF ISNULL(_parent_id) THEN
+			SELECT @lft := MAX(rgt) + 1, @rgt := MAX(rgt) + 2 FROM nodetree;
+			INSERT INTO nodetree(name, description, slug, lft, rgt) 
+				VALUES(_name, _description, _slug, @lft, @rgt);
+		ELSE
+			SELECT @subject_lft := lft, @subject_rgt := rgt 
+				FROM nodetree WHERE id = _parent_id;
+			SELECT COUNT(*) INTO @children_count FROM nodetree 
+				WHERE lft > @subject_lft AND rgt < @subject_rgt;
+			IF @children_count = 0 THEN
+				UPDATE nodetree set rgt = rgt + 2 WHERE rgt >= @subject_rgt;
+				UPDATE nodetree set lft = lft + 2 WHERE lft > @subject_lft;
+				INSERT INTO nodetree(name, description, slug, lft, rgt) 
+					VALUES(_name, _description, _slug, @subject_lft + 1, @subject_lft + 2);
+			ELSE
+				SELECT @max_lft := MAX(lft), @max_rgt := MAX(rgt) FROM nodetree 
+					WHERE lft > @subject_lft AND rgt < @subject_rgt;
+				UPDATE nodetree set lft = lft + 2 WHERE lft > @max_lft;
+				UPDATE nodetree set rgt = rgt + 2 WHERE rgt > @max_rgt;
+				INSERT INTO nodetree(name, description, slug, lft, rgt) 
+					VALUES(_name, _description, _slug, @max_lft + 2, @max_rgt + 2);
+			END IF;
+		END IF;
+	END IF;
+END//
+DELIMITER ;
+DROP PROCEDURE IF EXISTS delete_node;
+DELIMITER //
+CREATE PROCEDURE delete_node(IN _id INT)
+BEGIN
+	SELECT @subject_lft := lft, @subject_rgt := rgt FROM nodetree WHERE id = _id;
+	DELETE FROM nodetree WHERE lft >= @subject_lft AND rgt <= @subject_rgt;
+	SET @x := @subject_rgt - @subject_lft + 1;
+	UPDATE nodetree set lft = lft- @x WHERE lft > @subject_lft;
+	UPDATE nodetree set rgt = rgt- @x WHERE rgt > @subject_rgt;
+END//
+DELIMITER ;
